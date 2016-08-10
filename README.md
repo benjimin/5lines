@@ -22,7 +22,7 @@ Taking a (git) diff of the ndvi and fc repos (which had been implemented using o
 
 - The scripts (i.e. for launching on a cluster) really only differ in the name of the core python script.
 
-- The core app differences are also minimal.
+- The core app differences are also reasonably minimal..
 
 
 

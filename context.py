@@ -27,10 +27,9 @@ def buildcontext(fn, kwargs):
 
     with open('template.yaml') as f:
         template = string.Template(f.read())
-
     general = yaml.load(template.substitute(function=fn))
-
-    # TODO: implement command line argument dictionary (try to shoehorn into click rather than argparse style?)
+    
+    cmdline = commandlineargs()
 
     FileNotFoundError = IOError # nicer in python 3
     try:
@@ -46,4 +45,36 @@ def buildcontext(fn, kwargs):
     context = general
     context.update(specific)
     context.update(kwargs)
+    context.update(cmdline)
     return context
+
+
+def commandlineargs():
+    """ Facilitate receiving settings from the command-line """
+
+    import sys
+    if len(sys.argv) <= 1: # if no args (not even --help) then follow default behaviour
+        return {}
+    else: # need to parse arguments
+        app_name = sys.argv[0]
+        import click
+
+        class resume(Exception): # kind of like a coroutine?
+            def __init__(self, data={}):
+                self.contents = data
+        
+        @click.group(name=app_name)
+        def cli():
+            pass
+
+        @cli.command()
+        def pbs():
+            #raise resume(options_dict)
+            raise resume
+        
+        try:
+            cli() # click doesn't return
+            raise NotImplementedError
+        except resume as r:
+            return r.contents
+
